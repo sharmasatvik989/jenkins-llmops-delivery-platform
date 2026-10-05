@@ -6,7 +6,6 @@ from typing import Any
 import httpx
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse
-from fastapi.staticfiles import StaticFiles
 
 ROOT = Path(__file__).resolve().parents[1]
 HF_API = "https://huggingface.co/api/models"
@@ -45,7 +44,10 @@ FALLBACK_CATALOG = [
 ]
 
 app = FastAPI(title="Jenkins LLMOps Model Advisor", version="1.0.0")
-app.mount("/assets", StaticFiles(directory=ROOT / "public"), name="assets")
+PUBLIC_ASSETS = {
+    "app.js", "deploy-fixes.css", "orbs.css", "orbs.js",
+    "pipeline-cleanup.css", "pipeline.css", "styles.css",
+}
 
 def human_bytes(value: int | float | None) -> str:
     if not value: return "Not published"
@@ -137,6 +139,13 @@ async def curated_models(task: str, limit: int, use_case: str = "") -> list[dict
 
 @app.get("/")
 def home(): return FileResponse(ROOT / "public" / "index.html")
+
+@app.get("/assets/{asset_name}", include_in_schema=False)
+def local_public_asset(asset_name: str):
+    """Provide local asset URLs without requiring public/ at function import time."""
+    if asset_name not in PUBLIC_ASSETS:
+        raise HTTPException(status_code=404, detail="Not found")
+    return FileResponse(ROOT / "public" / asset_name)
 
 @app.get("/api/health")
 def health(): return {"status": "ok", "service": "model-advisor"}
