@@ -1,0 +1,15 @@
+.thought-orb::before,
+.thought-orb::after {
+  display: none !important;
+}
+
+.thought-orb {
+  align-items: center;
+  background: #09110f;
+  display: flex;
+  justify-content: center;
+}
+
+.thought-orb canvas {
+  display: block;
+}

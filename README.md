@@ -1,23 +1,28 @@
 # Jenkins LLMOps Delivery Platform
 
-A production-oriented reference platform for validating, packaging, and deploying Hugging Face inference services to Kubernetes through Jenkins.
+A model-selection and deployment-planning platform for Hugging Face workloads. It helps teams identify a suitable model, understand the infrastructure required to operate it, and generate release configuration for Jenkins, Helm, and Kubernetes.
 
-## What this project demonstrates
+## Version 1
 
-- Versioned inference APIs with readiness and liveness endpoints
-- Reproducible container builds and non-root runtime security
-- Jenkins quality gates for tests, image builds, and deployment manifests
-- Helm-based Kubernetes releases with resource limits, autoscaling, and rollback support
-- Prometheus-compatible latency, throughput, and error metrics
+Version 1 is a live model advisor. It does not deploy a model or claim to operate a cluster.
 
-## Delivery flow
+1. Search and browse at least 15 models using live Hugging Face Hub metadata.
+2. Organize models by category and supported task.
+3. Inspect CPU or GPU suitability, model format, license, storage, estimated memory, library, revision, downloads, and gating status.
+4. Recommend compute, resources, replicas, autoscaling, latency SLO, runtime, and model cache automatically.
+5. Generate model ID and revision, container configuration, Helm values, Kubernetes resources, and Jenkins parameters.
+
+Infrastructure recommendations are planning estimates derived from public model metadata, model size, task, format, and runtime. Production deployments must be benchmarked with representative traffic before approval.
+
+## Architecture
 
 ```text
-commit -> unit tests -> container build -> Helm validation -> publish -> deploy
-                                                        \-> health + SLO checks
+Browser -> FastAPI advisor -> Hugging Face Hub API
+        -> compatibility and sizing rules
+        -> Jenkins, Helm, Kubernetes and container configuration
 ```
 
-The initial model is configurable through `MODEL_ID`. The default sentiment classifier keeps the first iteration inexpensive and verifiable; the same delivery path can later host automotive diagnostic and telemetry classifiers.
+The Hugging Face Hub is the model repository. This repository owns the advisory application and reusable delivery assets, not model weights.
 
 ## Run locally
 
@@ -25,20 +30,29 @@ The initial model is configurable through `MODEL_ID`. The default sentiment clas
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8080
+uvicorn index:app --reload --port 8080
 ```
 
-```bash
-curl http://localhost:8080/health/live
-curl -X POST http://localhost:8080/v1/classify \
-  -H 'content-type: application/json' \
-  -d '{"text":"Battery temperature is above the recommended range."}'
-```
+Open `http://localhost:8080`.
+
+The included `app/main.py`, `Dockerfile`, Helm chart, and `Jenkinsfile` remain the reference inference workload and delivery path. Install `requirements-inference.txt` to run that workload.
+
+The animated lifecycle uses [thinking-orbs](https://github.com/Jakubantalik/thinking-orbs), distributed under the MIT License.
+
+## Deploy on Vercel
+
+Import this repository into Vercel with the repository root (`./`) selected. Vercel detects the root `index.py` FastAPI entry point, installs `requirements.txt`, installs the Node dependencies, and runs `npm run build:orbs` from `vercel.json`.
+
+- Framework preset: **FastAPI** (automatic detection is also supported)
+- Root directory: **`./`**
+- Environment variables: **none required for Version 1**
+- Build and output settings: **use the repository settings**
+
+The application reads public Hugging Face Hub metadata at request time. A deployment therefore needs normal outbound access to `huggingface.co`; no Hugging Face token is required for the public catalog used in Version 1.
 
 ## Roadmap
 
-1. Add model-quality fixtures and latency budgets to the Jenkins quality gate.
-2. Publish signed images and model metadata for every release.
-3. Add canary promotion with automated rollback on SLO violations.
-4. Replace the starter model with an automotive-domain classifier.
-
+1. Benchmark generated recommendations against representative workloads.
+2. Trigger a controlled Jenkins pipeline using generated parameters.
+3. Report Kubernetes rollout health and inference SLOs.
+4. Add canary promotion and automated rollback.

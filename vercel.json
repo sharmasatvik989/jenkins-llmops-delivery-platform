@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run build:orbs",
+  "rewrites": [
+    { "source": "/assets/:asset", "destination": "/:asset" }
+  ],
+  "functions": {
+    "index.py": {
+      "excludeFiles": "{.venv/**,app/**,deploy/**,node_modules/**,tests/**,Dockerfile,Jenkinsfile,requirements-inference.txt}"
+    }
+  }
+}

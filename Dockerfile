@@ -6,11 +6,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /service
 RUN groupadd --system inference && useradd --system --gid inference inference
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt requirements-inference.txt ./
+RUN pip install --no-cache-dir -r requirements-inference.txt
 COPY app ./app
 RUN mkdir -p /models/cache && chown -R inference:inference /service /models
 USER inference
 EXPOSE 8080
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
-
