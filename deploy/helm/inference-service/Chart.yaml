@@ -1,0 +1,7 @@
+apiVersion: v2
+name: inference-service
+description: Kubernetes release for a versioned Hugging Face inference API
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+

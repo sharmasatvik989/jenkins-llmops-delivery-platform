@@ -1,0 +1,19 @@
+replicaCount: 2
+image:
+  repository: jenkins-llmops-delivery-platform
+  tag: latest
+  pullPolicy: IfNotPresent
+service:
+  port: 80
+resources:
+  requests:
+    cpu: 500m
+    memory: 1Gi
+  limits:
+    cpu: "2"
+    memory: 3Gi
+autoscaling:
+  minReplicas: 2
+  maxReplicas: 8
+  targetCPUUtilizationPercentage: 65
+
