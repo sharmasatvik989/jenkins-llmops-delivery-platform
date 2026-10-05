@@ -41,7 +41,7 @@ The animated lifecycle uses [thinking-orbs](https://github.com/Jakubantalik/thin
 
 ## Deploy on Vercel
 
-Import this repository into Vercel with the repository root (`./`) selected. Vercel detects the root `index.py` FastAPI entry point, installs `requirements.txt`, installs the Node dependencies, and runs `npm run build:orbs` from `vercel.json`.
+Import this repository into Vercel with the repository root (`./`) selected. Vercel detects the root `index.py` FastAPI entry point and installs `requirements.txt`. The browser-ready Thinking Orbs bundle is committed in `public/orbs.js`; rebuild it locally with `npm run build:orbs` whenever `src/orbs.jsx` changes.
 
 - Framework preset: **FastAPI** (automatic detection is also supported)
 - Root directory: **`./`**
