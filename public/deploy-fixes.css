@@ -1,0 +1,12 @@
+/* Keep the working surface readable on ultrawide and zoomed-out displays. */
+body {
+  margin-inline: auto;
+  max-width: 1920px;
+}
+
+@media (min-width: 1921px) {
+  body {
+    border-left: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+  }
+}
