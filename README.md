@@ -1,5 +1,9 @@
 # Jenkins LLMOps Delivery Platform
 
+## Visitor analytics
+
+The production site includes Vercel Web Analytics for privacy-safe page views and unique visitor reporting. Enable **Web Analytics** from the Vercel project dashboard and redeploy after enabling it. Visitor data is available under the project's **Analytics** tab.
+
 A model-selection and deployment-planning platform for Hugging Face workloads. It helps teams identify a suitable model, understand the infrastructure required to operate it, and generate release configuration for Jenkins, Helm, and Kubernetes.
 
 ## Version 1
